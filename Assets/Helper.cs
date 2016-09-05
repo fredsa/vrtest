@@ -9,13 +9,15 @@ public class Helper : MonoBehaviour
 
 	public SteamVR foo;
 
-	protected SteamVR steamVR;
-	protected SteamVR_Render steamVR_Render;
-
 	void Awake ()
 	{
-		if (OpenVR.IsHmdPresent ()) {
-			StartCoroutine (DoIt ());
+		//LogState ();
+		try {
+			if (OpenVR.IsHmdPresent ()) {
+				StartCoroutine (DoIt ());
+			}
+		} catch (Exception e) {
+			Debug.Log ("VR NOT POSSIBLE: " + e);
 		}
 	}
 
@@ -31,17 +33,22 @@ public class Helper : MonoBehaviour
 		if (!VRSettings.enabled) {
 			//Debug.Log ("******* VRSettings.enabled = true");
 			VRSettings.enabled = true;
-			LogState ();
+			//LogState ();
 		}
 
-		if (!SteamVR.active) {
-			Debug.Log ("******* SteamVR.instance");
-			steamVR = SteamVR.instance;
+		//Debug.Log ("******* SteamVR.instance");
+		if (SteamVR.instance == null) {
+			Debug.LogError ("SteamVR.instance == null");
+			yield return null;
 		}
 
-		steamVR_Render = SteamVR_Render.instance;
+		//Debug.Log ("******* steamVR_Render.instance");
+		if (SteamVR_Render.instance == null) {
+			Debug.LogError ("steamVR_Render.instance == null");
+			yield return null;
+		}
 
-		LogState ();
+		//LogState ();
 	
 		RegisterListeners ();
 	}
@@ -86,13 +93,16 @@ public class Helper : MonoBehaviour
 
 	void LogState ()
 	{
-		Debug.Log (
-			"VRSettings(enabled=" + VRSettings.enabled + ",loadedDeviceName=" + VRSettings.loadedDeviceName + ",supportedDevices=[" + String.Join (", ", VRSettings.supportedDevices) + "]), " +
-			"VRDevice(isPresent=" + VRDevice.isPresent + ",model=" + VRDevice.model + ",refreshRate=" + VRDevice.refreshRate + ")\n" +
-			"SteamVR(active=" + SteamVR.active + ",usingNativeSupport=" + SteamVR.usingNativeSupport + ")," +
-			"FindObjectOfType<SteamVR_Render>()=" + GameObject.FindObjectOfType<SteamVR_Render> () + "," +
-			"OpenVR(IsHmdPresent()=" + OpenVR.IsHmdPresent () + ",IsRuntimeInstalled()=" + OpenVR.IsRuntimeInstalled () + ")"
-		);
+		string t =	"VRSettings(enabled=" + VRSettings.enabled + ",loadedDeviceName=" + VRSettings.loadedDeviceName + ",supportedDevices=[" + String.Join (", ", VRSettings.supportedDevices) + "]), " +
+		           "VRDevice(isPresent=" + VRDevice.isPresent + ",model=" + VRDevice.model + ",refreshRate=" + VRDevice.refreshRate + ")\n" +
+		           "SteamVR(active=" + SteamVR.active + ",usingNativeSupport=" + SteamVR.usingNativeSupport + ")," +
+		           "FindObjectOfType<SteamVR_Render>()=" + GameObject.FindObjectOfType<SteamVR_Render> () + ",";
+		try {
+			t += "OpenVR(IsHmdPresent()=" + OpenVR.IsHmdPresent () + ",IsRuntimeInstalled()=" + OpenVR.IsRuntimeInstalled () + ")";
+		} catch (Exception e) {
+			t += "OpenVR(" + e + ")";
+		}
+		Debug.Log (t);
 	}
 
 }
