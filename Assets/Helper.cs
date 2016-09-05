@@ -9,40 +9,18 @@ public class Helper : MonoBehaviour
 
 	public SteamVR foo;
 
+	protected SteamVR steamVR;
+	protected SteamVR_Render steamVR_Render;
+
 	void Awake ()
 	{
-		//LogState ();
+		if (OpenVR.IsHmdPresent ()) {
+			StartCoroutine (DoIt ());
+		}
 	}
-
-	void Start ()
-	{
-		StartCoroutine (DoIt ());
-		//StartCoroutine (DontDoIt ());
-	}
-
-	//	IEnumerator DontDoIt ()
-	//	{
-	//		yield return new WaitForSeconds (.5f);
-	//
-	//		Debug.Log ("******* VRSettings.enabled = false");
-	//		VRSettings.enabled = false;
-	//
-	//		yield return new WaitForSeconds (.5f);
-	//
-	//		Debug.Log ("******* LoadDeviceByName('')...");
-	//		VRSettings.LoadDeviceByName ("");
-	//
-	//		yield return new WaitForSeconds (.5f);
-	//
-	//		LogState ();
-	//	}
 
 	IEnumerator DoIt ()
 	{
-//		Debug.Log ("******* SteamVR.enabled = true");
-//		SteamVR.enabled = true;
-//		LogState ();
-
 		if (VRSettings.loadedDeviceName != "OpenVR") {
 			//Debug.Log ("******* LoadDeviceByName('OpenVR')...");
 			VRSettings.LoadDeviceByName ("OpenVR");
@@ -56,17 +34,15 @@ public class Helper : MonoBehaviour
 			LogState ();
 		}
 
-		//yield return new WaitForSeconds (.5f);
-
 		if (!SteamVR.active) {
 			Debug.Log ("******* SteamVR.instance");
-			var foo = SteamVR.instance;
+			steamVR = SteamVR.instance;
 		}
 
-		var bar = SteamVR_Render.instance;
+		steamVR_Render = SteamVR_Render.instance;
 
 		LogState ();
-
+	
 		RegisterListeners ();
 	}
 
